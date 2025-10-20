@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual Environment
+.venv/
+venv/
+ENV/
+env/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Dataset files (too large for git)
+dataset/*.mat
+cvind.mat
+
+# Output files (generated, not source)
+outputs/ce_mri_images/
+outputs/ce_mri_masks/
+outputs/logs/
+outputs/*.csv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Model files (usually large)
+*.h5
+*.pkl
+*.pth
+*.onnx
+
+# Logs
+*.log
