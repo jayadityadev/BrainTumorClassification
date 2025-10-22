@@ -7,7 +7,7 @@ import cv2
 from tqdm import tqdm
 import h5py
 
-ROOT = os.path.dirname(os.path.dirname(__file__))  # project root if running from src/
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))  # project root (two levels up from this file)
 DATASET_DIR = os.path.join(ROOT, "dataset")
 OUT_DIR = os.path.join(ROOT, "outputs", "ce_mri_images")
 LOG_DIR = os.path.join(ROOT, "outputs", "logs")

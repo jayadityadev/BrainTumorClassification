@@ -1,0 +1,28 @@
+{
+  "target_size": [
+    128,
+    128
+  ],
+  "color_mode": "grayscale",
+  "batch_size": 32,
+  "class_mode": "categorical",
+  "train_augmentation": {
+    "rescale": 0.00392156862745098,
+    "rotation_range": 15,
+    "width_shift_range": 0.05,
+    "height_shift_range": 0.05,
+    "zoom_range": 0.1,
+    "horizontal_flip": true,
+    "vertical_flip": false,
+    "fill_mode": "nearest"
+  },
+  "val_test_augmentation": {
+    "rescale": 0.00392156862745098
+  },
+  "num_classes": 3,
+  "class_names": [
+    "Meningioma",
+    "Glioma",
+    "Pituitary"
+  ]
+}

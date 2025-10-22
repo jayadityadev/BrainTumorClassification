@@ -62,7 +62,7 @@ cjdata:
 ### 🧭 Step 4: Loop through all files and count labels ✅ DONE (Results below)
 
 **Dataset Distribution:**
-- See `outputs/metadata.csv` for complete breakdown
+- See `outputs/data_splits/metadata.csv` for complete breakdown
 - 233 unique patients across 3 tumor types
 - Filenames now encode patient tracking for proper train/test splits
 

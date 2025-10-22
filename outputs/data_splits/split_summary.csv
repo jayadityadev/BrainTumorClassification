@@ -1,0 +1,5 @@
+Split,Patients,Images,Percentage
+Train,158,2059,67.2%
+Validation,28,325,10.6%
+Test,47,680,22.2%
+Total,233,3064,100.0%
