@@ -1,0 +1,21 @@
+{
+  "Model": "BrainTumorCNN",
+  "Training Date": "2025-10-22",
+  "Training Time": "0m 34s",
+  "Epochs Completed": 15,
+  "Max Epochs": 15,
+  "Early Stopped": false,
+  "Batch Size": 32,
+  "Initial LR": 0.0001,
+  "Final LR": 1.249999968422344e-05,
+  "Train Accuracy (Initial)": "0.6542",
+  "Train Accuracy (Final)": "0.7931",
+  "Train Accuracy (Best)": "0.7931",
+  "Val Accuracy (Initial)": "0.7292",
+  "Val Accuracy (Final)": "0.8431",
+  "Val Accuracy (Best)": "0.8646",
+  "Train Loss (Final)": "0.4770",
+  "Val Loss (Final)": "0.3706",
+  "Overfitting Gap": "-5.00%",
+  "Total Parameters": 4287491
+}
