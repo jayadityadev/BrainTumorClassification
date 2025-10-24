@@ -69,6 +69,7 @@ Today's focus is on building and validating a complete deep learning pipeline fo
 ## 🚀 Quick Start
 
 ```python
+```python
 import sys
 sys.path.append('../..')
 
@@ -88,6 +89,7 @@ history = model.fit(
     validation_data=val_gen,
     epochs=3
 )
+```
 ```
 
 ---
