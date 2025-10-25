@@ -4,6 +4,7 @@ A deep learning project for classifying brain tumors from MRI images into three 
 
 ## 📊 Dataset
 
+### Primary Dataset
 - **Total Images**: 3,064 brain MRI scans
 - **Classes**: 3 tumor types
   - Class 1: Meningioma (708 images)
@@ -11,6 +12,13 @@ A deep learning project for classifying brain tumors from MRI images into three 
   - Class 3: Pituitary (930 images)
 - **Patients**: 233 unique patients
 - **Format**: Contrast-enhanced MRI images (512×512 pixels)
+
+### 🆕 Optional: Kaggle Dataset Integration
+**Want more data?** Expand to **~8,841 images** (2.9× growth!) by integrating the Kaggle Brain Tumor MRI Dataset.
+
+**Quick Start**: See [KAGGLE_INTEGRATION_QUICKSTART.md](KAGGLE_INTEGRATION_QUICKSTART.md) (5-minute setup)
+
+**Full Guide**: See [docs/KAGGLE_DATASET_INTEGRATION.md](docs/KAGGLE_DATASET_INTEGRATION.md)
 
 ## 🏗️ Project Structure
 

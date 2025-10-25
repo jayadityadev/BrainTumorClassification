@@ -1,0 +1,10 @@
+{
+  "model": "EfficientNetB0",
+  "timestamp": "20251024_213202",
+  "test_loss": 0.5725870132446289,
+  "test_accuracy": 0.768967866897583,
+  "baseline_accuracy": 0.7683,
+  "improvement": 0.06678668975830249,
+  "total_epochs": 19,
+  "model_path": "../../outputs/models/transfer_learning/efficientnet_final_20251024_213202.keras"
+}

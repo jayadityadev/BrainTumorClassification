@@ -1,0 +1,10 @@
+{
+  "model": "DenseNet121",
+  "timestamp": "20251024_230244",
+  "test_loss": 0.32837510108947754,
+  "test_accuracy": 0.8824333548545837,
+  "baseline_accuracy": 0.7683,
+  "improvement": 11.413335485458376,
+  "total_epochs": 25,
+  "model_path": "../../outputs/models/transfer_learning/densenet121_final_20251024_230244.keras"
+}

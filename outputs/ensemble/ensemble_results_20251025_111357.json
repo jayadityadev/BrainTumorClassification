@@ -1,0 +1,54 @@
+{
+  "timestamp": "20251025_111357",
+  "ensemble_accuracy": 0.9535201640464799,
+  "ensemble_method": "top_models_only_with_Aggressive_TTA",
+  "num_models": 2,
+  "models_used": [
+    "ResNet50",
+    "DenseNet121"
+  ],
+  "individual_accuracies": {
+    "Baseline CNN": 0.7682843472317157,
+    "EfficientNetB0": 0.7689678742310321,
+    "ResNet50": 0.922077922077922,
+    "DenseNet121": 0.9364319890635681
+  },
+  "baseline_accuracy": 0.7682843472317157,
+  "improvement_over_baseline": 18.52358168147642,
+  "original_ensemble_accuracy": 0.9446343130553657,
+  "weighted_ensemble_accuracy": 0.9405331510594669,
+  "top_models_accuracy": 0.9460013670539986,
+  "classification_report": {
+    "glioma": {
+      "precision": 0.983132530120482,
+      "recall": 0.8927789934354485,
+      "f1-score": 0.9357798165137615,
+      "support": 457.0
+    },
+    "meningioma": {
+      "precision": 0.9528301886792453,
+      "recall": 0.9882583170254403,
+      "f1-score": 0.9702209414024976,
+      "support": 511.0
+    },
+    "pituitary": {
+      "precision": 0.9305019305019305,
+      "recall": 0.9737373737373738,
+      "f1-score": 0.9516288252714709,
+      "support": 495.0
+    },
+    "accuracy": 0.9535201640464799,
+    "macro avg": {
+      "precision": 0.9554882164338859,
+      "recall": 0.9515915613994208,
+      "f1-score": 0.9525431943959101,
+      "support": 1463.0
+    },
+    "weighted avg": {
+      "precision": 0.9547411129723925,
+      "recall": 0.9535201640464799,
+      "f1-score": 0.9531719382862908,
+      "support": 1463.0
+    }
+  }
+}

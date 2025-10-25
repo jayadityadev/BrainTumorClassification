@@ -1,0 +1,7 @@
+{
+  "timestamp": "20251024_195238",
+  "test_loss": 0.6505967378616333,
+  "test_accuracy": 0.7682843208312988,
+  "test_samples": 1463,
+  "model_path": "../../outputs/models/best_model_20251024_195238.keras"
+}

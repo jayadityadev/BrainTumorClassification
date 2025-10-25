@@ -21,13 +21,25 @@ cvind.mat
 
 # Output files (generated, not source)
 outputs/ce_mri_images/
+outputs/ce_mri_images_kaggle/
 outputs/ce_mri_masks/
 outputs/ce_mri_enhanced/
 outputs/logs/
-outputs/*.csv
+outputs/data_splits/*.csv
 
-# Keep visualizations for documentation
+# Model files (keras models are large)
+outputs/models/**/*.keras
+outputs/models/**/*.h5
+
+# Training history (CSV files can be large)
+outputs/training_history/**/*.csv
+
+# Ensemble outputs (predictions can be large)
+outputs/ensemble/**/*.csv
+
+# Keep important result files and visualizations
 !outputs/visualizations/
+!outputs/ensemble/*.json
 
 # IDE
 .vscode/
@@ -41,6 +53,8 @@ outputs/*.csv
 Thumbs.db
 
 # Model files (usually large)
+# Note: Trained models excluded due to size
+# Download from release or retrain using notebooks
 *.h5
 *.pkl
 *.pth

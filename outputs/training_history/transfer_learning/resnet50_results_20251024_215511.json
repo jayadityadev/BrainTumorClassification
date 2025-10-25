@@ -1,0 +1,10 @@
+{
+  "model": "ResNet50",
+  "timestamp": "20251024_215511",
+  "test_loss": 0.23967646062374115,
+  "test_accuracy": 0.9186602830886841,
+  "baseline_accuracy": 0.7683,
+  "improvement": 15.03602830886841,
+  "total_epochs": 25,
+  "model_path": "../../outputs/models/transfer_learning/resnet50_final_20251024_215511.keras"
+}
