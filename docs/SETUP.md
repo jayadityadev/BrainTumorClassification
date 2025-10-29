@@ -1,399 +1,216 @@
-# Setup Guide
+## Setup & Installation — Ubuntu (Linux) and Windows
 
-Complete installation and setup instructions for the Brain Tumor Classification System.
+This file is the canonical setup guide for this project. It provides compact, tested instructions for Linux (Ubuntu 20.04+) and Windows 10/11, with both GPU (NVIDIA) and CPU-only workflows. Follow the section that matches your OS and whether you plan to use a GPU.
 
-## Prerequisites
-
-### System Requirements
-- **OS**: Linux (Ubuntu 20.04+), macOS, or Windows 10+
-- **Python**: 3.11 or higher
-- **RAM**: Minimum 8GB, recommended 16GB
-- **GPU** (Optional): NVIDIA GPU with CUDA support for faster inference
-- **Disk Space**: ~10GB for dataset and models
-
-### Software Dependencies
-- Python 3.11+
-- pip (Python package manager)
-- Git
-- CUDA Toolkit 11.8+ (if using GPU)
-
-## Installation
-
-### 1. Clone the Repository
-
+Summary (quick commands)
+- Create venv, activate, install deps (GPU):
 ```bash
 git clone https://github.com/jayadityadev/BrainTumorClassification.git
 cd BrainTumorClassification
+python3 -m venv .venv
+source .venv/bin/activate   # Windows: .venv\\Scripts\\activate
+python -m pip install --upgrade pip setuptools wheel
+pip install -r requirements-gpu.txt   # or requirements-cpu.txt
+```
+- Create directories, download, preprocess, validate:
+```bash
+python scripts/setup_directories.py
+python scripts/download_datasets.py   # requires ~/.kaggle/kaggle.json for Kaggle dataset
+python src/preprocessing/convert_mat_to_png.py
+python src/preprocessing/enhance.py
+python src/data/combine_datasets.py
+python scripts/validate_system.py    # expected: 10/10 tests
 ```
 
-### 2. Create Virtual Environment
+1) Prerequisites
+- Python: 3.11 recommended (3.10+ should work). Use the same interpreter for venv and installs.
+- Disk: ~20 GB free (datasets + models + outputs).
+- Memory: 8GB minimum; 16GB recommended for comfortable operation.
+- GPU (optional): NVIDIA GPU recommended for training/inference speed. For small GPUs (e.g., GTX 1650) lower batch sizes may be required.
 
+2) Ubuntu 20.04+ (native Linux) — step-by-step
+
+a. System packages
 ```bash
-# Create virtual environment
+sudo apt update && sudo apt upgrade -y
+sudo apt install -y build-essential git wget unzip pkg-config libsndfile1
+```
+
+b. Python + venv
+```bash
+sudo apt install -y python3.11 python3.11-venv python3.11-dev python3-pip
 python3.11 -m venv .venv
-
-# Activate virtual environment
-# On Linux/macOS:
 source .venv/bin/activate
-
-# On Windows:
-.venv\Scripts\activate
+python -m pip install --upgrade pip setuptools wheel
 ```
 
-### 3. Install Dependencies
-
+c. GPU drivers (optional)
+- Install NVIDIA drivers via package manager or from NVIDIA site. Verify with `nvidia-smi`.
 ```bash
-# Upgrade pip
-pip install --upgrade pip
-
-# Install required packages
-pip install tensorflow==2.20.0
-pip install numpy pandas matplotlib seaborn
-pip install opencv-python pillow
-pip install flask werkzeug
-pip install scikit-learn scipy
-pip install tqdm
-```
-
-**GPU Support** (Optional but recommended):
-```bash
-# Install CUDA-enabled TensorFlow packages
-pip install nvidia-cudnn-cu12
-pip install nvidia-cublas-cu12
-
-# Verify GPU detection
-python -c "import tensorflow as tf; print('GPUs:', tf.config.list_physical_devices('GPU'))"
-```
-
-### 4. Verify Installation
-
-```bash
-# Run system validation
-python scripts/validate_system.py
-```
-
-Expected output: **10/10 tests passing**
-
-## Configuration
-
-### GPU Setup (NVIDIA)
-
-If you have an NVIDIA GPU:
-
-1. **Install NVIDIA Drivers**:
-```bash
-# Ubuntu
+# Ubuntu convenience installer (may require reboot)
 sudo ubuntu-drivers autoinstall
-
-# Check driver version
 nvidia-smi
 ```
+- CUDA/cuDNN: Follow the official TensorFlow GPU installation guide for the TF version you plan to use. Often the fastest path is to use the TF-provided binary (`pip install -r requirements-gpu.txt`) and ensure system CUDA and drivers are compatible.
 
-2. **Install CUDA Toolkit** (11.8+):
+d. Install Python dependencies
 ```bash
-# Follow instructions at:
-# https://developer.nvidia.com/cuda-downloads
+# GPU-enabled (recommended if you have a working NVIDIA driver + CUDA)
+pip install -r requirements-gpu.txt
+
+# CPU-only (if no GPU)
+pip install -r requirements-cpu.txt
 ```
 
-3. **Verify GPU Access**:
+Notes: `requirements-gpu.txt` in this repo pins the main packages used by the project. If TensorFlow reports missing CUDA/cuDNN components, follow the official install instructions at https://www.tensorflow.org/install/gpu for matching CUDA/cuDNN versions.
+
+3) Windows 10 / 11 — step-by-step
+
+a. Install Python
+- Download and install Python 3.11 from https://www.python.org. During install check "Add Python to PATH".
+
+b. Create virtual environment (PowerShell)
+```powershell
+# In PowerShell (run as non-admin in repo directory)
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1   # or use activate.bat in cmd.exe
+python -m pip install --upgrade pip setuptools wheel
+```
+
+c. GPU support (optional)
+- Install NVIDIA driver, CUDA Toolkit and cuDNN as per TensorFlow's Windows GPU guide. Use NVIDIA's installers for drivers and CUDA. Then install the GPU dependencies via pip:
+```powershell
+pip install -r requirements-gpu.txt
+```
+- If you run into wheel/compatibility issues on Windows, consider using the official TensorFlow packages and follow the TF GPU install docs.
+
+d. CPU-only
+```powershell
+pip install -r requirements-cpu.txt
+```
+
+4) Optional: Conda workflow (alternative)
+- If you prefer conda, create an environment and install packages there. Use `conda create -n braintumor python=3.11` then `conda activate braintumor` and install with pip or conda channels as appropriate. Note: prefer the repo's `requirements-*.txt` pip lists for reproducibility.
+
+5) Project setup (common across OS)
+
+a. Create required directories
 ```bash
-python -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"
+python scripts/setup_directories.py
 ```
 
-### Model Setup
-
-The current production model should be automatically available at:
-```
-models/current/densenet121_finetuned.keras
-```
-
-If missing, you can download it from the releases or retrain using:
+b. Download datasets (automated)
 ```bash
-python src/models/train.py
+python scripts/download_datasets.py
 ```
+Notes: Kaggle download requires `~/.kaggle/kaggle.json` (Kaggle API credentials). The Figshare CE‑MRI archive downloader may take time and network bandwidth.
 
-## Dataset Setup
-
-### Option 1: Use Existing Processed Data
-
-If you have the processed dataset:
+c. Convert and enhance (critical)
 ```bash
-# Dataset should be in:
-data/splits/train_split.csv
-data/splits/test_split.csv
+python src/preprocessing/convert_mat_to_png.py    # if you have .mat files
+python src/preprocessing/enhance.py              # mandatory for top performance
+python src/data/combine_datasets.py
 ```
+Important: the enhancement step (denoising + CLAHE + normalization) is required for the models to achieve the reported accuracy.
 
-### Option 2: Process Raw Data
-
-If starting from raw .mat files:
-
-1. Place .mat files in `data/raw/`
-2. Run conversion:
+d. Quick training (fast path)
 ```bash
-python src/preprocessing/convert_mat_to_png.py
+python src/models/fast_finetune_kaggle.py
 ```
-3. Combine datasets:
+Full training:
 ```bash
-python scripts/combine_datasets.py
+python src/models/train_combined_dataset.py
 ```
 
-## Running the Application
-
-### Web Interface
-
-Start the Flask web application:
-
-```bash
-python app.py
-```
-
-Then open your browser to: **http://localhost:5000**
-
-### Command Line Interface
-
-For single image prediction:
-
-```python
-from src.inference.predict import predict_with_localization
-
-results = predict_with_localization(
-    image_path="path/to/mri_scan.jpg",
-    model_path="models/current/densenet121_finetuned.keras",
-    model_type="densenet121"
-)
-
-print(f"Prediction: {results['predicted_class']}")
-print(f"Confidence: {results['confidence']:.2f}%")
-```
-
-### Evaluation
-
-Evaluate model performance:
-
-```bash
-python scripts/evaluate_kaggle.py
-```
-
-## Development Setup
-
-### IDE Configuration
-
-**VS Code** (Recommended):
-1. Install Python extension
-2. Set interpreter to `.venv/bin/python`
-3. Enable Pylance for type checking
-4. Configure debugger for Flask
-
-### Testing
-
-Run unit tests:
-```bash
-# Run all tests
-python -m pytest tests/
-
-# Run specific test
-python -m pytest tests/test_inference.py
-```
-
-## Troubleshooting
-
-### GPU Not Detected
-
-**Problem**: TensorFlow not detecting GPU
-
-**Solutions**:
-1. Check NVIDIA drivers: `nvidia-smi`
-2. Install CUDA packages:
-   ```bash
-   pip install nvidia-cudnn-cu12 nvidia-cublas-cu12
-   ```
-3. Reload nvidia_uvm module:
-   ```bash
-   sudo rmmod nvidia_uvm
-   sudo modprobe nvidia_uvm
-   ```
-
-### Import Errors
-
-**Problem**: `ModuleNotFoundError: No module named 'src'`
-
-**Solution**: Add project root to Python path:
-```python
-import sys
-from pathlib import Path
-sys.path.append(str(Path(__file__).parent))
-```
-
-### Out of Memory
-
-**Problem**: GPU out of memory during inference
-
-**Solutions**:
-1. Reduce batch size
-2. Use CPU instead: Set `CUDA_VISIBLE_DEVICES=""`
-3. Close other GPU applications
-
-### Model Loading Errors
-
-**Problem**: Cannot load model file
-
-**Solutions**:
-1. Verify model path is correct
-2. Check model file exists and isn't corrupted
-3. Ensure TensorFlow version matches (2.20.0)
-
-## Performance Optimization
-
-### GPU Acceleration
-
-Enable GPU memory growth:
-```python
-import tensorflow as tf
-
-gpus = tf.config.list_physical_devices('GPU')
-if gpus:
-    tf.config.experimental.set_memory_growth(gpus[0], True)
-```
-
-### Batch Prediction
-
-For multiple images:
-```python
-# Process images in batches
-batch_size = 32
-for batch in batches(images, batch_size):
-    predictions = model.predict(batch)
-```
-
-### Model Optimization
-
-Convert to TensorRT for faster inference:
-```bash
-# Requires TensorRT installation
-python -m tf2onnx.convert --saved-model models/current/ --output model.onnx
-```
-
-## Production Deployment
-
-### Using Gunicorn
-
-For production, use a production-grade WSGI server:
-
-```bash
-# Install gunicorn
-pip install gunicorn
-
-# Run with 4 workers
-gunicorn -w 4 -b 0.0.0.0:5000 app:app
-```
-
-### Using Docker
-
-Create `Dockerfile`:
-```dockerfile
-FROM python:3.11-slim
-
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-
-COPY . .
-
-EXPOSE 5000
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "app:app"]
-```
-
-Build and run:
-```bash
-docker build -t brain-tumor-classifier .
-docker run -p 5000:5000 brain-tumor-classifier
-```
-
-### Using Nginx
-
-Configure Nginx as reverse proxy:
-```nginx
-server {
-    listen 80;
-    server_name your-domain.com;
-
-    location / {
-        proxy_pass http://127.0.0.1:5000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-    }
-}
-```
-
-## Environment Variables
-
-Create `.env` file for configuration:
-
-```bash
-# Flask Configuration
-FLASK_APP=app.py
-FLASK_ENV=production
-FLASK_DEBUG=0
-
-# Model Configuration
-MODEL_PATH=models/current/densenet121_finetuned.keras
-MODEL_TYPE=densenet121
-
-# Server Configuration
-HOST=0.0.0.0
-PORT=5000
-MAX_CONTENT_LENGTH=16777216  # 16MB
-
-# GPU Configuration
-CUDA_VISIBLE_DEVICES=0  # Use first GPU, -1 for CPU only
-```
-
-## Validation Checklist
-
-After setup, verify everything works:
-
-- [ ] Virtual environment activated
-- [ ] All dependencies installed
-- [ ] GPU detected (if applicable)
-- [ ] Model file exists and loads
-- [ ] Dataset accessible
-- [ ] Web app starts successfully
-- [ ] Single prediction works
-- [ ] Validation script passes all tests
-- [ ] Evaluation runs without errors
-
-Run the complete validation:
+e. Validate the system (smoke tests)
 ```bash
 python scripts/validate_system.py
 ```
+Expected: 10/10 tests passing. A `validation_report.txt` is written to the repo root.
 
-Expected: **10/10 tests passing** ✅
+6) Verify installation & runtime checks
 
-## Getting Help
+- Check Python and pip
+```bash
+python --version
+pip --version
+```
+- Check TensorFlow and GPU
+```bash
+python -c "import tensorflow as tf; print('TF', tf.__version__); print('GPUs', tf.config.list_physical_devices('GPU'))"
+# Optional: on systems with NVIDIA drivers
+nvidia-smi
+```
+- Quick inference smoke test (after model exists)
+```bash
+python -c "from src.inference.predict import predict_with_localization; print('OK')"
+```
 
-### Documentation
-- [README.md](../README.md) - Project overview
-- [ARCHITECTURE.md](ARCHITECTURE.md) - System design
-- [API.md](API.md) - API reference
-- [INFERENCE_GUIDE.md](INFERENCE_GUIDE.md) - Prediction guide
+7) Troubleshooting (common issues)
 
-### Support
-- GitHub Issues: Report bugs or request features
-- Documentation: Check docs/ directory
-- Validation: Run `python scripts/validate_system.py`
+- GPU not detected / TF reports no GPU:
+    - Verify `nvidia-smi` shows a device and drivers are installed.
+    - Ensure the CUDA/cuDNN versions are compatible with the TensorFlow wheel you installed (see TF GPU install docs).
+    - If you installed `requirements-gpu.txt` but TF cannot find GPU, try installing the TF wheel recommended for your CUDA version.
 
-## Next Steps
+- Out of memory (OOM) on GPU:
+    - Reduce `BATCH_SIZE` in training scripts (e.g., from 32 → 16 → 8).
+    - Enable memory growth in TF (example below) or run on CPU for small tests.
 
-Once setup is complete:
+- Model file not found / cannot load model:
+    - Check `models/current/` for `densenet121` or `resnet50` folders and final .keras files.
+    - Re-run training or copy the model into `models/current/`.
 
-1. **Test the web interface**: Open http://localhost:5000
-2. **Try a prediction**: Upload an MRI scan
-3. **Review documentation**: Read through docs/
-4. **Explore notebooks**: Check notebooks/archive/ for experiments
-5. **Run evaluation**: `python scripts/evaluate_kaggle.py`
+- Permissions / path issues on Windows:
+    - Use PowerShell/CMD with appropriate user privileges and ensure paths do not contain non-ASCII characters.
 
----
+8) Helpful snippets
 
-**Last Updated**: October 26, 2025  
-**Setup Time**: ~15-30 minutes  
-**Difficulty**: Intermediate
+Enable TF GPU memory growth (Python):
+```python
+import tensorflow as tf
+gpus = tf.config.list_physical_devices('GPU')
+if gpus:
+        tf.config.experimental.set_memory_growth(gpus[0], True)
+```
+
+Check TF can use CUDA (Python):
+```python
+import tensorflow as tf
+print(tf.__version__)
+print(tf.test.is_built_with_cuda())
+print(tf.config.list_physical_devices('GPU'))
+```
+
+9) Environment variables (example `.env`)
+```
+FLASK_APP=app.py
+FLASK_ENV=production
+MODEL_PATH=models/current/densenet121/densenet121_final_20251029_215941.keras
+MODEL_TYPE=densenet121
+HOST=0.0.0.0
+PORT=5000
+MAX_CONTENT_LENGTH=16777216
+CUDA_VISIBLE_DEVICES=0
+```
+
+10) Success criteria & verification
+
+After setup and running the preprocessing and validation steps, you should observe:
+
+- `python scripts/validate_system.py` → 10/10 tests passed
+- Models saved to `models/current/<model_name>/` (check for final .keras file)
+- Inference (GPU): ~50–100 ms per image on the hardware used in the verified run
+- Grad-CAM visualizations saved to `outputs/predictions/`
+
+If you need help diagnosing a specific failure, capture the output of `python scripts/validate_system.py` and `validation_report.txt` and open an issue with those logs.
+
+11) Advanced / production notes (short)
+
+- Containerization: a Dockerfile skeleton exists; for GPU containers see NVIDIA's Docker + CUDA support and the `nvidia-docker` runtime.
+- Model optimization: consider TF-TRT or ONNX/TensorRT for lower latency in production.
+- Serving: use Gunicorn + Nginx or a dedicated model server for scaling.
+
+--
+
+Last updated: 2025-10-29
