@@ -64,6 +64,22 @@ def download_ce_mri_dataset():
     """
     dataset_dir = os.path.join(project_root, "datasets", "ce-mri")
     os.makedirs(dataset_dir, exist_ok=True)
+
+    # --- Skip Logic: Detect existing dataset ---
+    existing_mats = [f for f in os.listdir(dataset_dir) if f.endswith(".mat")]
+    complete_flag = os.path.join(dataset_dir, ".complete")
+
+    # If the marker file exists → skip directly
+    if os.path.exists(complete_flag) and len(existing_mats) >= 3064:
+        print("✓ CE-MRI dataset already exists. Skipping download.")
+        return True
+
+    # If .mat files already exist but no marker — still skip (for compatibility)
+    if len(existing_mats) >= 3064:
+        print("✓ CE-MRI dataset already extracted. Creating .complete marker.")
+        open(complete_flag, "w").close()
+        return True
+
     
     print("\n" + "="*70)
     print("📥 Downloading CE-MRI Brain Tumor Dataset from Figshare")
@@ -159,7 +175,13 @@ def download_ce_mri_dataset():
         print(f"\n✅ SUCCESS!")
         print(f"   ✓ Extracted {mat_count} .mat files")
         print(f"   ✓ Dataset saved to: {dataset_dir}")
+
+        # Create marker file to indicate successful completion
+        complete_flag = os.path.join(dataset_dir, ".complete")
+        open(complete_flag, "w").close()
+
         return True
+
     
     except Exception as e:
         print(f"\n❌ ERROR: {str(e)}")
