@@ -1,9 +1,21 @@
 ## Setup & Installation — Ubuntu (Linux) and Windows
 
-This file is the canonical setup guide for this project. It provides compact, tested instructions for Linux (Ubuntu 20.04+) and Windows 10/11, with both GPU (NVIDIA) and CPU-only workflows. Follow the section that matches your OS and whether you plan to use a GPU.
+This is the **canonical setup guide** for the project. It provides compact, tested instructions for Linux (Ubuntu 20.04+) and Windows 10/11, with both GPU (NVIDIA) and CPU-only workflows.
 
-Summary (quick commands)
-- Create venv, activate, install deps (GPU):
+---
+
+### 🔎 At a Glance (Where to Look)
+
+- **Just want to run it once?** Use the quick commands below or the End-to-End Run Guide in `README.md`.
+- **Need OS-specific setup?** See **2. Ubuntu** and **3. Windows**.
+- **Stuck on environment / GPU issues?** Jump to **6. Runtime checks** and **7. Troubleshooting**.
+- **Deploying or optimizing?** See **11. Advanced / production notes**.
+
+---
+
+### ⚡ Summary (Quick Commands)
+
+**Create venv, activate, install deps (GPU):**
 ```bash
 git clone https://github.com/jayadityadev/BrainTumorClassification.git
 cd BrainTumorClassification
@@ -12,7 +24,8 @@ source .venv/bin/activate   # Windows: .venv\\Scripts\\activate
 python -m pip install --upgrade pip setuptools wheel
 pip install -r requirements-gpu.txt   # or requirements-cpu.txt
 ```
-- Create directories, download, preprocess, validate:
+
+**Create directories, download, preprocess, validate:**
 ```bash
 python scripts/setup_directories.py
 python scripts/download_datasets.py   # requires ~/.kaggle/kaggle.json for Kaggle dataset
@@ -22,21 +35,26 @@ python src/data/combine_datasets.py
 python scripts/validate_system.py    # expected: 10/10 tests
 ```
 
-1) Prerequisites
-- Python: 3.11 recommended (3.10+ should work). Use the same interpreter for venv and installs.
-- Disk: ~20 GB free (datasets + models + outputs).
-- Memory: 8GB minimum; 16GB recommended for comfortable operation.
-- GPU (optional): NVIDIA GPU recommended for training/inference speed. For small GPUs (e.g., GTX 1650) lower batch sizes may be required.
+---
 
-2) Ubuntu 20.04+ (native Linux) — step-by-step
+### 1) Prerequisites
 
-a. System packages
+- **Python:** 3.11 recommended (3.10+ should work). Use the same interpreter for venv and installs.
+- **Disk:** ~20 GB free (datasets + models + outputs).
+- **Memory:** 8 GB minimum; 16 GB recommended.
+- **GPU (optional):** NVIDIA GPU recommended; on smaller GPUs (e.g., GTX 1650) lower batch sizes may be required.
+
+---
+
+### 2) Ubuntu 20.04+ (Native Linux) — Step-by-Step
+
+**a. System packages**
 ```bash
 sudo apt update && sudo apt upgrade -y
 sudo apt install -y build-essential git wget unzip pkg-config libsndfile1
 ```
 
-b. Python + venv
+**b. Python + venv**
 ```bash
 sudo apt install -y python3.11 python3.11-venv python3.11-dev python3-pip
 python3.11 -m venv .venv
@@ -44,7 +62,8 @@ source .venv/bin/activate
 python -m pip install --upgrade pip setuptools wheel
 ```
 
-c. GPU drivers (optional)
+**c. GPU drivers (optional)**
+
 - Install NVIDIA drivers via package manager or from NVIDIA site. Verify with `nvidia-smi`.
 ```bash
 # Ubuntu convenience installer (may require reboot)
@@ -53,7 +72,7 @@ nvidia-smi
 ```
 - CUDA/cuDNN: Follow the official TensorFlow GPU installation guide for the TF version you plan to use. Often the fastest path is to use the TF-provided binary (`pip install -r requirements-gpu.txt`) and ensure system CUDA and drivers are compatible.
 
-d. Install Python dependencies
+**d. Install Python dependencies**
 ```bash
 # GPU-enabled (recommended if you have a working NVIDIA driver + CUDA)
 pip install -r requirements-gpu.txt
@@ -62,14 +81,17 @@ pip install -r requirements-gpu.txt
 pip install -r requirements-cpu.txt
 ```
 
-Notes: `requirements-gpu.txt` in this repo pins the main packages used by the project. If TensorFlow reports missing CUDA/cuDNN components, follow the official install instructions at https://www.tensorflow.org/install/gpu for matching CUDA/cuDNN versions.
+> **Note:** `requirements-gpu.txt` pins the main packages used by the project. If TensorFlow reports missing CUDA/cuDNN components, follow the official install instructions at <https://www.tensorflow.org/install/gpu> for matching CUDA/cuDNN versions.
 
-3) Windows 10 / 11 — step-by-step
+---
 
-a. Install Python
-- Download and install Python 3.11 from https://www.python.org. During install check "Add Python to PATH".
+### 3) Windows 10 / 11 — Step-by-Step
 
-b. Create virtual environment (PowerShell)
+**a. Install Python**
+
+- Download and install Python 3.11 from <https://www.python.org>. During install check **“Add Python to PATH”**.
+
+**b. Create virtual environment (PowerShell)**
 ```powershell
 # In PowerShell (run as non-admin in repo directory)
 python -m venv .venv
@@ -77,96 +99,124 @@ python -m venv .venv
 python -m pip install --upgrade pip setuptools wheel
 ```
 
-c. GPU support (optional)
+**c. GPU support (optional)**
+
 - Install NVIDIA driver, CUDA Toolkit and cuDNN as per TensorFlow's Windows GPU guide. Use NVIDIA's installers for drivers and CUDA. Then install the GPU dependencies via pip:
 ```powershell
 pip install -r requirements-gpu.txt
 ```
 - If you run into wheel/compatibility issues on Windows, consider using the official TensorFlow packages and follow the TF GPU install docs.
 
-d. CPU-only
+**d. CPU-only**
 ```powershell
 pip install -r requirements-cpu.txt
 ```
 
-4) Optional: Conda workflow (alternative)
-- If you prefer conda, create an environment and install packages there. Use `conda create -n braintumor python=3.11` then `conda activate braintumor` and install with pip or conda channels as appropriate. Note: prefer the repo's `requirements-*.txt` pip lists for reproducibility.
+---
 
-5) Project setup (common across OS)
+### 4) Optional: Conda Workflow (Alternative)
 
-a. Create required directories
+- If you prefer Conda, create an environment and install packages there:
+
+```bash
+conda create -n braintumor python=3.11
+conda activate braintumor
+python -m pip install --upgrade pip setuptools wheel
+pip install -r requirements-gpu.txt   # or requirements-cpu.txt
+```
+
+> **Tip:** Prefer the repo’s `requirements-*.txt` pip lists for reproducibility.
+
+---
+
+### 5) Project Setup (Common Across OS)
+
+**a. Create required directories**
 ```bash
 python scripts/setup_directories.py
 ```
 
-b. Download datasets (automated)
+**b. Download datasets (automated)**
 ```bash
 python scripts/download_datasets.py
 ```
-Notes: Kaggle download requires `~/.kaggle/kaggle.json` (Kaggle API credentials). The Figshare CE‑MRI archive downloader may take time and network bandwidth.
+> **Note:** Kaggle download requires `~/.kaggle/kaggle.json` (Kaggle API credentials). The Figshare CE‑MRI archive downloader may take time and network bandwidth.
 
-c. Convert and enhance (critical)
+**c. Convert and enhance (critical)**
 ```bash
 python src/preprocessing/convert_mat_to_png.py    # if you have .mat files
 python src/preprocessing/enhance.py              # mandatory for top performance
 python src/data/combine_datasets.py
 ```
-Important: the enhancement step (denoising + CLAHE + normalization) is required for the models to achieve the reported accuracy.
+> **Important:** The enhancement step (denoising + CLAHE + normalization) is **required** for the models to achieve the reported accuracy.
 
-d. Quick training (fast path)
+**d. Quick training (fast path)**
 ```bash
 python src/models/fast_finetune_kaggle.py
 ```
-Full training:
+
+**Full training:**
 ```bash
 python src/models/train_combined_dataset.py
 ```
 
-e. Validate the system (smoke tests)
+**e. Validate the system (smoke tests)**
 ```bash
 python scripts/validate_system.py
 ```
 Expected: 10/10 tests passing. A `validation_report.txt` is written to the repo root.
 
-6) Verify installation & runtime checks
+---
 
-- Check Python and pip
+### 6) Verify Installation & Runtime Checks
+
+**Check Python and pip:**
 ```bash
 python --version
 pip --version
 ```
-- Check TensorFlow and GPU
+
+**Check TensorFlow and GPU:**
 ```bash
 python -c "import tensorflow as tf; print('TF', tf.__version__); print('GPUs', tf.config.list_physical_devices('GPU'))"
 # Optional: on systems with NVIDIA drivers
 nvidia-smi
 ```
-- Quick inference smoke test (after model exists)
+
+**Quick inference smoke test (after model exists):**
 ```bash
 python -c "from src.inference.predict import predict_with_localization; print('OK')"
 ```
 
-7) Troubleshooting (common issues)
+---
 
-- GPU not detected / TF reports no GPU:
-    - Verify `nvidia-smi` shows a device and drivers are installed.
-    - Ensure the CUDA/cuDNN versions are compatible with the TensorFlow wheel you installed (see TF GPU install docs).
-    - If you installed `requirements-gpu.txt` but TF cannot find GPU, try installing the TF wheel recommended for your CUDA version.
+### 7) Troubleshooting (Common Issues)
 
-- Out of memory (OOM) on GPU:
-    - Reduce `BATCH_SIZE` in training scripts (e.g., from 32 → 16 → 8).
-    - Enable memory growth in TF (example below) or run on CPU for small tests.
+**GPU not detected / TF reports no GPU**
 
-- Model file not found / cannot load model:
-    - Check `models/current/` for `densenet121` or `resnet50` folders and final .keras files.
-    - Re-run training or copy the model into `models/current/`.
+- Verify `nvidia-smi` shows a device and drivers are installed.
+- Ensure the CUDA/cuDNN versions are compatible with the TensorFlow wheel you installed (see TF GPU install docs).
+- If you installed `requirements-gpu.txt` but TF cannot find GPU, try installing the TF wheel recommended for your CUDA version.
 
-- Permissions / path issues on Windows:
-    - Use PowerShell/CMD with appropriate user privileges and ensure paths do not contain non-ASCII characters.
+**Out of memory (OOM) on GPU**
 
-8) Helpful snippets
+- Reduce `BATCH_SIZE` in training scripts (e.g., from 32 → 16 → 8).
+- Enable memory growth in TF (example below) or run on CPU for small tests.
 
-Enable TF GPU memory growth (Python):
+**Model file not found / cannot load model**
+
+- Check `models/current/` for `densenet121` or `resnet50` folders and final `.keras` files.
+- Re-run training or copy the model into `models/current/`.
+
+**Permissions / path issues on Windows**
+
+- Use PowerShell/CMD with appropriate user privileges and ensure paths do not contain non-ASCII characters.
+
+---
+
+### 8) Helpful Snippets
+
+**Enable TF GPU memory growth (Python):**
 ```python
 import tensorflow as tf
 gpus = tf.config.list_physical_devices('GPU')
@@ -174,7 +224,7 @@ if gpus:
         tf.config.experimental.set_memory_growth(gpus[0], True)
 ```
 
-Check TF can use CUDA (Python):
+**Check TF can use CUDA (Python):**
 ```python
 import tensorflow as tf
 print(tf.__version__)
@@ -182,11 +232,13 @@ print(tf.test.is_built_with_cuda())
 print(tf.config.list_physical_devices('GPU'))
 ```
 
-9) Environment variables (example `.env`)
+---
+
+### 9) Environment Variables (example `.env`)
 ```
 FLASK_APP=app.py
 FLASK_ENV=production
-MODEL_PATH=models/current/densenet121/densenet121_final_20251029_215941.keras
+    MODEL_PATH=models/current/densenet121/densenet121_final_20251121_135727.keras
 MODEL_TYPE=densenet121
 HOST=0.0.0.0
 PORT=5000
@@ -194,23 +246,27 @@ MAX_CONTENT_LENGTH=16777216
 CUDA_VISIBLE_DEVICES=0
 ```
 
-10) Success criteria & verification
+---
 
-After setup and running the preprocessing and validation steps, you should observe:
+### 10) Success Criteria & Verification
 
-- `python scripts/validate_system.py` → 10/10 tests passed
-- Models saved to `models/current/<model_name>/` (check for final .keras file)
+After setup and running preprocessing and validation steps, you should see:
+
+- `python scripts/validate_system.py` → **10/10 tests passed**
+- Models saved to `models/current/<model_name>/` (check for final `.keras` file)
 - Inference (GPU): ~50–100 ms per image on the hardware used in the verified run
 - Grad-CAM visualizations saved to `outputs/predictions/`
 
 If you need help diagnosing a specific failure, capture the output of `python scripts/validate_system.py` and `validation_report.txt` and open an issue with those logs.
 
-11) Advanced / production notes (short)
+---
 
-- Containerization: a Dockerfile skeleton exists; for GPU containers see NVIDIA's Docker + CUDA support and the `nvidia-docker` runtime.
-- Model optimization: consider TF-TRT or ONNX/TensorRT for lower latency in production.
-- Serving: use Gunicorn + Nginx or a dedicated model server for scaling.
+### 11) Advanced / Production Notes (Short)
 
---
+- **Containerization:** a Dockerfile skeleton exists; for GPU containers see NVIDIA's Docker + CUDA support and the `nvidia-docker` runtime.
+- **Model optimization:** consider TF-TRT or ONNX/TensorRT for lower latency in production.
+- **Serving:** use Gunicorn + Nginx or a dedicated model server for scaling.
 
-Last updated: 2025-10-29
+---
+
+Last updated: 2025-11-21
