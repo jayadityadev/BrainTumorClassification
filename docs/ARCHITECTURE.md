@@ -10,47 +10,86 @@ This repo implements a small, production-style pipeline for brain MRI tumor clas
 - Inference (predict + Grad-CAM visualization)
 - Web app (Flask) for uploads and visualization
 
+High-level pipeline (conceptual)
+-------------------------------
+
+```text
+Raw CE-MRI (.mat) & Kaggle JPGs
+         │
+         ▼
+  [Preprocessing]
+  - convert_mat_to_png.py
+  - enhance.py  (denoise + CLAHE)
+         │
+         ▼
+  Enhanced image folders
+         │
+         ▼
+  [Dataset Orchestration]
+  - combine_datasets.py  → train_split.csv / test_split.csv
+         │
+         ▼
+  [Training]
+  - train_combined_dataset.py (DenseNet121 / ResNet50)
+         │
+         ▼
+  models/current/<model_name>/*.keras
+         │
+         ▼
+  [Inference & Explainability]
+  - predict.py + gradcam.py  → outputs/predictions/
+         │
+         ▼
+  [Web App]
+  - app.py (Flask) + templates/static
+```
+
 Key run-time stats (verified)
 ----------------------------
 - Combined training samples: 6,568
 - Combined test samples: 1,519
-- Best model (DenseNet121): `models/current/densenet121/densenet121_final_20251029_215941.keras`
-- DenseNet121 test accuracy: 98.49%
-- ResNet50 test accuracy: 96.58%
+- Best model (DenseNet121): `models/current/densenet121/densenet121_final_20251121_135727.keras`
+- DenseNet121 test accuracy: 99.21%
+- ResNet50 test accuracy: 96.51%
 - Inference latency (avg): ~51 ms / image
 
 Module map (where to look)
 ---------------------------
 - Preprocessing: `src/preprocessing/convert_mat_to_png.py`, `src/preprocessing/enhance.py`
 - Dataset combine: `src/data/combine_datasets.py`
-- Training: `src/models/train_combined_dataset.py`, `src/models/fast_finetune_kaggle.py`
+- Training (core): `src/models/train_combined_dataset.py`
+- Training (optional / advanced): `src/models/fast_finetune_kaggle.py` – fast fine-tuning of an existing DenseNet121 model on the combined dataset
 - Inference & explainability: `src/inference/predict.py`, `src/inference/gradcam.py`
 - App & UI: `app.py`, `templates/`
 
 Data flow
 ---------
-1. Raw CE‑MRI (.mat) files are converted to PNG via `convert_mat_to_png.py`.
-2. Images are enhanced with `enhance.py` (Non-local means denoising + CLAHE + normalization).
-3. Kaggle images are enhanced similarly and combined via `combine_datasets.py` to produce train/test CSVs in `data/combined_data_splits/`.
-4. Training scripts create models saved under `models/current/<model_name>/` (phase checkpoints, final model, confusion matrix and history images).
-5. Inference pipeline preprocesses input → model.predict → Grad-CAM → 3‑panel visualization saved to `outputs/predictions/`.
+1. **Ingestion:** raw CE‑MRI (.mat) files and Kaggle JPGs are ingested.
+2. **Preprocessing:** CE‑MRI .mat files are converted to PNG via `convert_mat_to_png.py`; all images (CE‑MRI + Kaggle) are enhanced with `enhance.py`.
+3. **Dataset build:** `combine_datasets.py` scans enhanced folders and produces `train_split.csv` and `test_split.csv` in `data/combined_data_splits/`.
+4. **Training:** `train_combined_dataset.py` reads the CSVs, trains DenseNet121/ResNet50 and saves models + confusion matrices + history plots under `models/current/<model_name>/`.
+5. **Inference:** `predict.py` loads the latest model, applies temperature scaling + Grad-CAM (via `gradcam.py`) and writes 3‑panel visualizations to `outputs/predictions/`.
+6. **Serving:** `app.py` exposes a Flask UI that wraps the inference pipeline for browser-based uploads.
 
 Model details
 -------------
 - DenseNet121 (transfer learned)
-  - Input: (128, 128, 3)
-  - Trainable parameters: ~7.3M
-  - Final model path (from run): `models/current/densenet121/densenet121_final_20251029_215941.keras`
+       - Input: (128, 128, 3)
+       - Trainable parameters: ~7.3M
+       - Final model path (from latest run): `models/current/densenet121/densenet121_final_20251121_135727.keras`
 
 - ResNet50 (alternate)
-  - Trainable parameters: ~24M
-  - Final model path: `models/current/resnet50/resnet50_final_20251029_222554.keras`
+       - Trainable parameters: ~24M
+       - Final model path (from latest run): `models/current/resnet50/resnet50_final_20251121_142635.keras`
 
 Operational notes
 -----------------
 - Preprocessing (enhance.py) is critical for top performance. The validation run explicitly called this and the final models depend on the enhanced images.
 - GPU memory: the verified run used an NVIDIA GeForce GTX 1650 with ~2.6GB available in TensorFlow; the fine‑tuning phase produced allocator OOM warnings but completed. If you run on small GPUs, lower batch size or use mixed precision where appropriate.
 - The repo includes `scripts/validate_system.py` which performs a 10‑test smoke validation (GPU, model loading, prediction, enhancement checks, and performance benchmarks).
+- The repo also includes two **optional / advanced** utilities:
+  - `src/models/fast_finetune_kaggle.py` – fast fine-tuning of an existing DenseNet121 model on the combined dataset
+  - `scripts/evaluate_kaggle.py` – evaluates cross-domain generalization on a Kaggle-only test set and produces detailed reports/plots under `outputs/reports/`
 
 Where artifacts are saved
 ------------------------
@@ -72,4 +111,4 @@ Extending the system
 - To change preprocessing: update `src/preprocessing/enhance.py` and re-run `src/data/combine_datasets.py` and `train_combined_dataset.py`.
 - To add endpoints: update `app.py` and call `src/inference/predict.py` for prediction + localization.
 
-Last updated: auto-generated from run on 2025-10-29
+Last updated: 2025-11-21

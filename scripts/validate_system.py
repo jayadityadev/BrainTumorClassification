@@ -1,6 +1,13 @@
 """
 🔍 ULTIMATE VALIDATION SCRIPT
-Tests all components of the Brain Tumor Classification system
+Tests all components of the Brain Tumor Classification system.
+
+Latest verified run (2025-11-21)
+- Combined training samples: 6,568
+- Combined test samples: 1,519
+- Best model: models/current/densenet121/densenet121_final_20251121_135727.keras
+- DenseNet121 test accuracy: 99.21%
+- ResNet50 test accuracy: 96.51%
 """
 
 import os
