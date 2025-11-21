@@ -1,0 +1,14 @@
+version: '3.8'
+services:
+  web:
+    build: .
+    image: brain-tumor-app:latest
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./models:/app/models:rw
+      - ./uploads:/app/uploads:rw
+      - ./outputs:/app/outputs:rw
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped

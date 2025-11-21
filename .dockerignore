@@ -1,0 +1,18 @@
+# Exclude local artifacts and large data from Docker build context
+data
+datasets
+combined_dataset
+data_splits
+outputs
+models
+models/current
+uploads
+.venv
+venv
+__pycache__
+.git
+*.pyc
+*.pyo
+*.pyd
+*.so
+.DS_Store
