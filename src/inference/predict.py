@@ -234,9 +234,21 @@ def predict_with_localization(image_path, model_path, model_type='resnet50',
                 print(f"GPU mem before: {before_mem}, after: {after_mem}")
         else:
             pred_probs = model.predict(img_array, verbose=0)[0]
-    pred_class = np.argmax(pred_probs)
+    # Apply temperature scaling to calibrate overconfident predictions
+    # Temperature > 1 softens the probabilities (reduces overconfidence)
+    # Temperature set to 5.0 to address extreme overconfidence in this model
+    # Note: Model shows signs of overfitting - future: add regularization during training
+    TEMPERATURE = 5.0
+    logits = np.log(pred_probs + 1e-10)  # Convert back to logits
+    scaled_logits = logits / TEMPERATURE
+    pred_probs_calibrated = np.exp(scaled_logits) / np.sum(np.exp(scaled_logits))
+    
+    pred_class = np.argmax(pred_probs_calibrated)
     pred_label = label_names[pred_class]
-    confidence = pred_probs[pred_class] * 100
+    confidence = pred_probs_calibrated[pred_class] * 100
+    
+    # Use calibrated probabilities for all downstream calculations
+    pred_probs = pred_probs_calibrated
     
     # Check confidence threshold for uncertainty/no tumor detection
     is_uncertain = confidence < (confidence_threshold * 100)

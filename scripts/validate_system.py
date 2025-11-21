@@ -289,10 +289,16 @@ def test_5_direct_model_predictions():
             img_array = np.array(img_resized) / 255.0
             img_array = np.expand_dims(img_array, axis=0)
             
-            # Predict
+            # Predict with temperature scaling for calibration
             pred = model.predict(img_array, verbose=0)
-            pred_class = np.argmax(pred[0])
-            confidence = pred[0][pred_class] * 100
+            
+            # Apply temperature scaling (same as in predict.py)
+            TEMPERATURE = 5.0
+            logits = np.log(pred[0] + 1e-10)
+            pred_calibrated = np.exp(logits / TEMPERATURE) / np.sum(np.exp(logits / TEMPERATURE))
+            
+            pred_class = np.argmax(pred_calibrated)
+            confidence = pred_calibrated[pred_class] * 100
             
             label_names = {0: 'Glioma', 1: 'Meningioma', 2: 'Pituitary'}
             pred_name = label_names[pred_class]
